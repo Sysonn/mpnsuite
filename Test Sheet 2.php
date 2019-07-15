@@ -1,35 +1,29 @@
-<?php
-session_start();
-include ("includes/constants.php");
-include ("classes/mpnloader.php");
-
-?>
-
 <html xmlns:v="urn:schemas-microsoft-com:vml"
 xmlns:o="urn:schemas-microsoft-com:office:office"
 xmlns:x="urn:schemas-microsoft-com:office:excel"
 xmlns="http://www.w3.org/TR/REC-html40">
-
 
 <head>
 <meta name="Excel Workbook Frameset">
 <meta http-equiv=Content-Type content="text/html; charset=windows-1252">
 <meta name=ProgId content=Excel.Sheet>
 <meta name=Generator content="Microsoft Excel 15">
-<link rel=File-List href="cwm_files/filelist.xml">
+<link rel=File-List href="Test%20Sheet%202_files/filelist.xml">
 <![if !supportTabStrip]>
-<link id="shLink" href="cwm_files/sheet001.php">
+<link id="shLink" href="Test%20Sheet%202_files/sheet001.htm">
+<link id="shLink" href="Test%20Sheet%202_files/sheet002.htm">
+<link id="shLink" href="Test%20Sheet%202_files/sheet003.htm">
 
 <link id="shLink">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
 <script language="JavaScript">
 <!--
- var c_lTabs=1;
+ var c_lTabs=3;
 
  var c_rgszSh=new Array(c_lTabs);
- c_rgszSh[0] = "Display_CWM";
+ c_rgszSh[0] = "Sheet1";
+ c_rgszSh[1] = "Sheet2";
+ c_rgszSh[2] = "Sheet3";
 
 
 
@@ -303,25 +297,27 @@ function fnSetActiveSheet(iSh)
   fnBuildFrameset();
 //-->
 </script>
-
-
-
-
-
 <![endif]><!--[if gte mso 9]><xml>
  <x:ExcelWorkbook>
   <x:ExcelWorksheets>
    <x:ExcelWorksheet>
-    <x:Name>Display_CWM</x:Name>
-    <x:WorksheetSource HRef="cwm_files/sheet001.htm"/>
+    <x:Name>Sheet1</x:Name>
+    <x:WorksheetSource HRef="Test%20Sheet%202_files/sheet001.htm"/>
+   </x:ExcelWorksheet>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet2</x:Name>
+    <x:WorksheetSource HRef="Test%20Sheet%202_files/sheet002.htm"/>
+   </x:ExcelWorksheet>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet3</x:Name>
+    <x:WorksheetSource HRef="Test%20Sheet%202_files/sheet003.htm"/>
    </x:ExcelWorksheet>
   </x:ExcelWorksheets>
-  <x:Stylesheet HRef="cwm_files/stylesheet.css"/>
-  <x:WindowHeight>12360</x:WindowHeight>
+  <x:Stylesheet HRef="Test%20Sheet%202_files/stylesheet.css"/>
+  <x:WindowHeight>11265</x:WindowHeight>
   <x:WindowWidth>28800</x:WindowWidth>
-  <x:WindowTopX>0</x:WindowTopX>
-  <x:WindowTopY>0</x:WindowTopY>
-  <x:Calculation>ManualCalculation</x:Calculation>
+  <x:WindowTopX>32767</x:WindowTopX>
+  <x:WindowTopY>32767</x:WindowTopY>
   <x:ProtectStructure>False</x:ProtectStructure>
   <x:ProtectWindows>False</x:ProtectWindows>
  </x:ExcelWorkbook>
@@ -329,8 +325,8 @@ function fnSetActiveSheet(iSh)
 </head>
 
 <frameset rows="*,39" border=0 width=0 frameborder=no framespacing=0>
- <frame src="cwm_files/sheet001.php" name="frSheet" id="frSheet">
- <frame src="cwm_files/tabstrip.htm" name="frTabs" id="frTabs" marginwidth=0 marginheight=0>
+ <frame src="Test%20Sheet%202_files/sheet001.htm" name="frSheet">
+ <frame src="Test%20Sheet%202_files/tabstrip.htm" name="frTabs" marginwidth=0 marginheight=0>
  <noframes>
   <body>
    <p>This page uses frames, but your browser doesn't support them.</p>

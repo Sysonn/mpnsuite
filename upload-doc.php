@@ -41,7 +41,7 @@ include ("classes/mpnloader.php");
                         <span class="icon-bar"></span>
                       </button>
                       <a class="navbar-brand" href="index.php"><img src="img/West-Rock-Logo.png" width="200px"></a>
-                      <div style="margin-top: 27px; float: left; font-size: 20px; color:grey;">Document Suite</div>
+                      <div style="margin-top: 27px; float: left; font-size: 20px; color:grey;">Project Suite</div>
                   
                     </div>
 
@@ -65,27 +65,30 @@ include ("classes/mpnloader.php");
 
 
            
-            <h1 style="margin-left: 20px;">Upload Hours Data</h1>
-            <br>
-                <div style="float:left;">
-                <a  href="hours.php"><button class="btn btn-primary" style="margin-left: 20px;">Hours</button></a>
-                <a  href="hours-report.php"><button class="btn btn-primary" style="margin-left: 20px;">Reports</button></a>
-                <button class="btn btn-primary" type="submit" style="margin-left: 20px;">Designers</button>
-               
-      
-                </div>
-            <br><br>
+            <h1 style="margin-left: 20px;">Upload Document</h1>
+
             <hr>
 
 <br>     
 
 <div style="border-style: solid; border-width: 1px; border-radius: 10px; border-color: grey; background-color: lightgrey; margin: 0 auto; padding-bottom: 20px; width: 50%;">
-<form action="upload-hours.php" method="post" enctype="multipart/form-data" style="margin-left: 150px;">
-    <h2>Select file to upload:</h2>
+<form action="upload-doc.php" method="post" id="form1" enctype="multipart/form-data" style="margin-left: 150px;">
     <br>
+    <h2>Select html page to upload:</h2>
+    <br>
+    <div style="border-style: solid; border-color: grey; border-width: 1px; padding: 5px; width: 500px; background-color: white;">
     <input type="file" name="file" id="file">
+    </div>
+    <br><br>
+    <!-- <input type="submit" name="submit" value="Submit"> -->
+    <h2>Select folder files to upload:</h2>
     <br>
-    <input type="submit" name="submit" value="Submit">
+    <div style="border-style: solid; border-color: grey; border-width: 1px; padding: 5px; width: 500px; background-color: white;">
+    <input type="file" name="files[]" id="files" multiple>
+    </div>
+    <br><br>
+    <br><br>
+    <input type="submit" name="submit" value="Submit" id="submit" style="width: 180px; height: 35px; font-size: 18px; font-weight: bold; border-radius: 5px; background-color: #2679c7;; color: white;">
 </form>
 <br>
 
@@ -93,32 +96,83 @@ include ("classes/mpnloader.php");
 
 <?php
 
+$server = 'NTDEV0102\SQLCORP';
+$dbName = 'MD_DesignDoc_DEV';
+$uid = 'dds_user';
+$pwd = 'pgDS!11*';
+
+$conn = new PDO("sqlsrv:server=$server; database = $dbName", $uid, $pwd);
+$conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );  
+
   if(!empty($_FILES['file']))
   {
-    $filename = addslashes($_FILES['file']['tmp_name']);
+    $filename = basename($_FILES['file']['name']);
+    $newFileName = substr($filename, 0 , (strrpos($filename, ".")));
 
+    //$folderName = extension($_FILES['file']['name']);
 
-    $query = <<<eof
-    LOAD DATA LOCAL INFILE '$filename' 
-    INTO TABLE hours2
-     FIELDS TERMINATED BY ',' 
-     OPTIONALLY ENCLOSED BY '"'
-     LINES TERMINATED BY '\r\n'
-     IGNORE 1 LINES
-    (MPN, Project_Name, @Project_Date, Customer, Customer_Bill_To, Salesperson_Name, Activity_Name, Location_Name, Full_Name, @Work_Date, @Modified_Date, Hours, Region)
-    SET Project_Date = DATE_FORMAT(STR_TO_DATE(@Project_Date, '%m/%d/%Y'),'%Y-%m-%d'), Work_Date = DATE_FORMAT(STR_TO_DATE(@Work_Date, '%m/%d/%Y'),'%Y-%m-%d'), Modified_Date = DATE_FORMAT(STR_TO_DATE(@Modified_Date, '%m/%d/%Y'),'%Y-%m-%d');
-eof;
+    $target_dir = "./";
+    $target_file = $target_dir . $filename;
+    
+    move_uploaded_file($_FILES['file']['tmp_name'], $target_file);
+      
+      echo "<script>
+            document.getElementById('submit').style.display = 'none';
+            document.getElementById('form1').style.display = 'none';
+            document.getElementById('files').style.display = 'none';
+      
+            </script>
+            <div style='font-size: 36px; margin-left: 20px; font-weight: bold;'>" . ($newFileName) . "</div><br>";
+            
+            $cust = 'PG';
+            $user = 'dtsisson';
+            
+            $docquery = "INSERT INTO dbo.Doc_Library (DocID, DocName, Upload_Date, Upload_User, Customer, DocType, FileType, DocPath ) VALUES ((SELECT ISNULL(MAX(DocID) + 1, 1) FROM dbo.Doc_Library), '$newFileName', '3/7/2019', '$user', '$cust', 'CustomerRequired', '.xlsx', './$newFileName.php')";  
+            
+           //if ($conn->query($docquery) === TRUE) {
+            $conn->query($docquery);
+            echo "<div style='background-color: #00cc00; color: white; font-size: 18px; padding: 10px; width: 300px; border-radius: 20px; text-align: center;'>
+              Upload Complete!
+              </div>";
 
-//SET Project_Date = date_format(STR_TO_DATE(@Project_Date, "%m-%d-%Y"),"%Y-%m-%d")
-
-mysqli_query($db, $query);
-
-echo "<div style='font-size: 8px;'>" . ($_FILES['file']['name']) . "</div>";
-echo "Upload Complete!";
-
+            // } else {
+            //     echo "Error: " . $conn->error;
+            // }
+            
+     
     }else{
+      
+    }
+
+
+    rename("./". $filename, "./" . $newFileName . ".php");
+    
+
+// Count # of uploaded files in array
+$total = count($_FILES['files']['name']);
+
+
+// Loop through each file
+for( $i=0 ; $i < $total ; $i++ ) {
+
+  //Get the temp file path
+  $tmpFilePath = $_FILES['files']['tmp_name'][$i];
+
+  //Make sure we have a file path
+  if ($tmpFilePath != ""){
+    //Setup our new file path
+    mkdir("./" . $newFileName . "_files");
+    $newFilePath = "./" . $newFileName . "_files/" . $_FILES['files']['name'][$i];
+
+    //Upload the file into the temp dir
+    if(move_uploaded_file($tmpFilePath, $newFilePath)) {
+
+      //Handle other code here
 
     }
+  }
+}
+
   
 ?>
 </div>           

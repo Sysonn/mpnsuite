@@ -5,22 +5,64 @@ include ("includes/constants.php");
 include ("classes/mpnloader.php");
 
 $mpn = $_SESSION['mpn'];
+$doc = $_SESSION['doc'];
+$cust = $_SESSION['cust'];
 
 $cwmurl="cwm-page.php?fetchid=" . $mpn;
 $mpnurl="mpn.php?fetchid=" . $mpn;
 
 
-$mpnsql="SELECT * FROM projects WHERE MPN='$mpn'";
-$mpnresult=mysqli_query($db,$mpnsql);
-$mpnrow=mysqli_fetch_array($mpnresult,MYSQLI_ASSOC);
 
-$cat=$mpnrow['Category'];
-$cf=$mpnrow['CF'];
-$bc=$mpnrow['Brandcode'];
-$desc=$mpnrow['Desc'];
+$server = 'NTDEV0102\SQLCORP';
+$dbName = 'MD_DesignDoc_DEV';
+$uid = 'dds_user';
+$pwd = 'pgDS!11*';
+
+$conn = new PDO("sqlsrv:server=$server; database = $dbName", $uid, $pwd);
+$conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );  
+
+  
+$mpnquery = "SELECT * FROM dbo.MPN_Master WHERE mpn='$mpn'";  
+$mpnstmt = $conn->query( $mpnquery );  
+$mpnrow = $mpnstmt->fetch( PDO::FETCH_ASSOC );
+
+
+//////////////////////////////////////////
+
+$cf=$mpnrow['CF_ID'];
+//$bc=$mpnrow['Brandcode'];
+
 $mpn2=$mpnrow['MPN'];
 $conc=$mpnrow['Concept'];
-$tempID=$mpnrow['Template ID'];
+$tempID=$mpnrow['Template_ID'];
+
+
+$cfquery = "SELECT * FROM dbo.CFData WHERE CF_ID = 'CF-$cf'";  
+$cfstmt = $conn->query( $cfquery );  
+$cfrow = $cfstmt->fetch( PDO::FETCH_ASSOC );
+
+$cat=$cfrow['Subsector_Name'];
+$desc=$cfrow['FPC_Name'];
+$bc=$cfrow['FPC_Id'];
+
+////////////////////////////////////
+
+
+
+$docquery = "SELECT * FROM dbo.Doc_Library WHERE Customer = '$cust'";   
+  
+// simple query  
+//$docstmt = $conn->query( $docquery );  
+// $docrow = $docstmt->fetch( PDO::FETCH_ASSOC );
+
+//----------------------------------------------------------//
+
+// $docName=$docrow['DocName'];
+// $cfsql="SELECT * FROM CF WHERE CF_ID = 'CF-$cf'";
+// $cfresult=mysqli_query($db,$cfsql);
+// $cfrow=mysqli_fetch_array($cfresult,MYSQLI_ASSOC);
+
+
 
 ?>
 
@@ -66,7 +108,7 @@ $tempID=$mpnrow['Template ID'];
                         <span class="icon-bar"></span>
                       </button>
                       <a class="navbar-brand" href="index.php"><img src="img/West-Rock-Logo.png" width="200px"></a>
-                      <div style="margin-top: 27px; float: left; font-size: 20px; color:grey;">MPN Suite</div>
+                      <div style="margin-top: 27px; float: left; font-size: 20px; color:grey;">Project Suite</div>
                   
                     </div>
 
@@ -89,7 +131,23 @@ $tempID=$mpnrow['Template ID'];
                   <div class="row">
                     <div class="col-sm-3 col-md-2 sidebar">
                       <ul class="nav nav-sidebar">
-                        <li class="active"><a href="#"><span class="glyphicon glyphicon-home" style="margin-right: 10px; color: white;"></span>MPN Home<span class="sr-only">(current)</span></a></li>
+                      
+                      <li><a href=<?php echo ''.$mpnurl .''?>> <span class="glyphicon glyphicon-home" style="margin-right: 10px; color: grey;"></span>MPN Home<span class="sr-only">(current)</span></a></li>
+                        <?php
+                        $docstmt = $conn->query( $docquery);  
+                        
+                        while ( $docrow = $docstmt->fetch( PDO::FETCH_ASSOC ) ){ 
+                         
+                          echo "<li><a href='doc.php?fetchid=" . $mpn . "&doc=" . $docrow['DocName'] . "&cust=" . $cust . "'</a> <img src='img/icons/pi-icon.png' width='20px' style='margin-right: 8px;'>" . $docrow['DocName'] . "</li>";
+                        }
+
+                        ?>
+                        <li><a href="upload-doc.php"><div style="background-color: grey; color: white; border-radius: 10px; height: 30px; font-weight: bold; text-align: center; line-height: 30px;">+ Add Doc</div></a></li>
+                      </ul>
+                      
+                      
+          
+                        <!-- <li class="active"><a href="#"><span class="glyphicon glyphicon-home" style="margin-right: 10px; color: white;"></span>MPN Home<span class="sr-only">(current)</span></a></li>
                         <li><a href= <?php echo '"' .$cwmurl .'"'?> > <span class="glyphicon glyphicon-scale" style="margin-right: 10px; color: grey;"></span>CWM</a></li>
                         <li><a href="#"><img src="img/icons/pal-icon.png" width="20px" style="margin-right: 8px;">PAL</a></li>
                         <li><a href="#"><span class="glyphicon glyphicon-th" style="margin-right: 10px; color: grey;"></span>PPOG</a></li>
@@ -98,7 +156,7 @@ $tempID=$mpnrow['Template ID'];
                         <li><a href="#"><img src="img/icons/ship-icon.png" width="20px" style="margin-right: 8px;">Ship Test</a></li>
                         <li><a href="#"><span class="glyphicon glyphicon-check" style="margin-right: 10px; color: #808080;"></span>SV Form</a></li>
                         <li><a href="#"><img src="img/icons/pi-icon.png" width="20px" style="margin-right: 8px;">PI</a></li>
-                      </ul>
+                      </ul> -->
                       <br><br>
                       <!-- ----------------------- -->
                       <!-- <ul class="nav nav-sidebar">
@@ -165,7 +223,7 @@ $tempID=$mpnrow['Template ID'];
                         </tr>
                           <tr>
                             <td><b>Template:</b></td>
-                            <td><input></td>
+                            <td><input value='<?php echo $tempID ?>'></td>
                         </tr>
                           <tr>
                             <td><b>Template Weight:</b></td>
@@ -195,7 +253,7 @@ $tempID=$mpnrow['Template ID'];
         </div>
 
         <td> 
-        <h2 style="margin-left: 100px; margin-top: -100px;">Template Name</h2>
+        <h2 style="margin-left: 100px; margin-top: -100px;"><?php echo $tempID ?></h2>
         <img class="temp" src="img/template/PDQ30(12.1D-10.3H).png" width= "400px">
             <br>
         <div class="table-responsive" style="width: 400px; margin-top: 0px; margin-left:100px">
@@ -251,130 +309,37 @@ $tempID=$mpnrow['Template ID'];
         <hr>
 
         <div class="table-responsive">
-        <h2 class="sub-header">Components</h2>
+        <h2 class="sub-header">Products</h2>
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>#</th>
-                <th>Header</th>
-                <th>Header</th>
-                <th>Header</th>
-                <th>Header</th>
+                <th>Description</th>
+                <th>Brandcode</th>
+                <th>UPC</th>
+                <th>Qty</th>
+               
             </tr>
             </thead>
-            <tbody>
-            <tr>
-                <td>1,001</td>
-                <td>Lorem</td>
-                <td>ipsum</td>
-                <td>dolor</td>
-                <td>sit</td>
-            </tr>
-            <tr>
-                <td>1,002</td>
-                <td>amet</td>
-                <td>consectetur</td>
-                <td>adipiscing</td>
-                <td>elit</td>
-            </tr>
-            <tr>
-                <td>1,003</td>
-                <td>Integer</td>
-                <td>nec</td>
-                <td>odio</td>
-                <td>Praesent</td>
-            </tr>
-            <tr>
-                <td>1,003</td>
-                <td>libero</td>
-                <td>Sed</td>
-                <td>cursus</td>
-                <td>ante</td>
-            </tr>
-            <tr>
-                <td>1,004</td>
-                <td>dapibus</td>
-                <td>diam</td>
-                <td>Sed</td>
-                <td>nisi</td>
-            </tr>
-            <tr>
-                <td>1,005</td>
-                <td>Nulla</td>
-                <td>quis</td>
-                <td>sem</td>
-                <td>at</td>
-            </tr>
-            <tr>
-                <td>1,006</td>
-                <td>nibh</td>
-                <td>elementum</td>
-                <td>imperdiet</td>
-                <td>Duis</td>
-            </tr>
-            <tr>
-                <td>1,007</td>
-                <td>sagittis</td>
-                <td>ipsum</td>
-                <td>Praesent</td>
-                <td>mauris</td>
-            </tr>
-            <tr>
-                <td>1,008</td>
-                <td>Fusce</td>
-                <td>nec</td>
-                <td>tellus</td>
-                <td>sed</td>
-            </tr>
-            <tr>
-                <td>1,009</td>
-                <td>augue</td>
-                <td>semper</td>
-                <td>porta</td>
-                <td>Mauris</td>
-            </tr>
-            <tr>
-                <td>1,010</td>
-                <td>massa</td>
-                <td>Vestibulum</td>
-                <td>lacinia</td>
-                <td>arcu</td>
-            </tr>
-            <tr>
-                <td>1,011</td>
-                <td>eget</td>
-                <td>nulla</td>
-                <td>Class</td>
-                <td>aptent</td>
-            </tr>
-            <tr>
-                <td>1,012</td>
-                <td>taciti</td>
-                <td>sociosqu</td>
-                <td>ad</td>
-                <td>litora</td>
-            </tr>
-            <tr>
-                <td>1,013</td>
-                <td>torquent</td>
-                <td>per</td>
-                <td>conubia</td>
-                <td>nostra</td>
-            </tr>
-            <tr>
-                <td>1,014</td>
-                <td>per</td>
-                <td>inceptos</td>
-                <td>himenaeos</td>
-                <td>Curabitur</td>
-            </tr>
-            <tr>
-                <td>1,015</td>
-                <td>sodales</td>
-                <td>ligula</td>
-                <td>in</td>
-                <td>libero</td>
-            </tr>
+<?php
+
+ 
+while ( $cfrow = $cfstmt->fetch( PDO::FETCH_ASSOC ) ){  
+   
+  //print_r( $row['Name'] ."\n" );  
+
+//$searchurl="mpn.php?fetchid=" .  $row['MPN'] ;
+
+echo
+
+           '<tr>
+                <td>'.$cfrow['Feeder_Name'] . '</td>
+                <td>'.$cfrow['Feeder_FPC_Id'].'</td>
+                <td>'.$cfrow['feeder_gtin'].'</td>
+                <td>'.$cfrow['Feeder_Total_Selling_Eaches'].'</td>
+            </tr>'
+    ;}
+
+?>
             </tbody>
         </table>
         </div>

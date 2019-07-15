@@ -78,7 +78,7 @@ include ("classes/mpnloader.php");
         
 
             <div style="float: left; margin-left: 20px;">
-            <form id="reportForm" action="workable.php" method="post">    
+            <form id="reportForm" action="hours-report.php" method="post">    
             
         
                    
@@ -87,6 +87,7 @@ include ("classes/mpnloader.php");
                 <h2>Designer:</h2>
                 <select id="designerSelect" class="form-control" name="designer" style="width: 200px;">
                     <option> Select </option>
+                    <option style=" font-weight: bold;"> - All Designers -</option>
                 <?php
 
                     $design_list = "SELECT DISTINCT Full_Name From HOURS Full_Name Order by Full_Name";          
@@ -140,7 +141,7 @@ include ("classes/mpnloader.php");
                 <br><br>
                 <div style="float: left;">
                 <h2>Workable Hours:</h2>
-                 <input type="number" name="workHours" class="form-control">
+                 <input type="text" class="form-control">
                 </div>
 
                 </div>
@@ -153,7 +154,6 @@ include ("classes/mpnloader.php");
             $designerCheck = $_POST["designer"];
             $year1Check = $_POST["startYear"];
             $year2Check = $_POST["endYear"];
-            $workHours= $_POST["workHours"];
             
              if($year1Check == "Select"){
                 echo "<br><br><div style='margin-left: 0px; color: red; font-size: 14px;'> Please Select Start Date!</div>";
@@ -222,29 +222,104 @@ include ("classes/mpnloader.php");
     $year2 = $_POST["endYear"];
 
     $date1 = $year1.'-'.$month1.'-01';
-    //$date2 = $year2.'-'.$month2.'-31';
+    $date2 = $year2.'-'.$month2.'-31';
     $newdate1 = date('Y-m-d', strtotime($date1));
-    //$newdate2 = date('Y-m-d', strtotime($date2));  
+    $newdate2 = date('Y-m-d', strtotime($date2));  
     
     // Overall Total Hours
     $region_list = "SELECT SUM(Hours) From HOURS WHERE (Work_Date between '$newdate1' AND '$newdate2') AND MPN <> 'No MPN' AND Region IS NOT NULL";
     $region_query = mysqli_query($db, $region_list);   
     $regionrow = mysqli_fetch_array($region_query,MYSQLI_ASSOC);
     
-    if(!empty($_POST["designer"])) {
-        //$qD = "UPDATE ProfileDesc SET Description = '$desc' WHERE profileID = '$profileidprofile'";
-        $qD = "INSERT INTO workable_hours (Full_Name, Workable, Date) VALUES ('$designerCheck', '$workHours', '$newdate1')";
-        $queryDesc = mysqli_query($db, $qD);
-        echo "<script type='text/javascript'>alert('$designerCheck');</script>";
-        echo "<script type='text/javascript'>alert('$workHours');</script>";
-        echo "<script type='text/javascript'>alert('$newdate1');</script>";
-	}
+    // US Total Hours
+    $us_list = "SELECT SUM(Hours) From HOURS WHERE (Work_Date between '$newdate1' AND '$newdate2') AND MPN <> 'No MPN' AND Region = 'US' ";
+    $us_query = mysqli_query($db, $us_list);   
+    $usrow = mysqli_fetch_array($us_query,MYSQLI_ASSOC);
     
+    // CA Total Hours
+    $ca_list = "SELECT SUM(Hours) From HOURS WHERE (Work_Date between '$newdate1' AND '$newdate2') AND MPN <> 'No MPN' AND Region = 'CA' ";
+    $ca_query = mysqli_query($db, $ca_list);   
+    $carow = mysqli_fetch_array($ca_query,MYSQLI_ASSOC);
+    
+    // Overall Total Projects
+    $pro_list = "SELECT COUNT(Distinct MPN) From HOURS WHERE (Work_Date between '$newdate1' AND '$newdate2') AND MPN <> 'No MPN' AND Region IS NOT NULL";
+    $pro_query = mysqli_query($db, $pro_list);   
+    $prorow = mysqli_fetch_array($pro_query,MYSQLI_ASSOC);
+    
+    // US Total Projects
+    $uspro_list = "SELECT COUNT(Distinct MPN) From HOURS WHERE (Work_Date between '$newdate1' AND '$newdate2') AND MPN <> 'No MPN' AND Region = 'US'";
+    $uspro_query = mysqli_query($db, $uspro_list);   
+    $usprorow = mysqli_fetch_array($uspro_query,MYSQLI_ASSOC);
+
+    // CA Total Projects
+    $capro_list = "SELECT COUNT(Distinct MPN) From HOURS WHERE (Work_Date between '$newdate1' AND '$newdate2') AND MPN <> 'No MPN' AND Region = 'CA'";
+    $capro_query = mysqli_query($db, $capro_list);   
+    $caprorow = mysqli_fetch_array($capro_query,MYSQLI_ASSOC);
+
+    if ($_POST["designer"] == "- All Designers -"){   
+    echo '
+    <hr>
+    <h4 style="margin-left: 20px; font-size: 20px; width: 800px;">Average Hours / Project 
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  
+        Total Projects  
+        </h4>
+    <div class = "table-responsive" style="width: 800px; margin-left: 20px; font-size: 18px;">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th style="color: grey;">Region</th>
+                                <th style="color: grey;">Avg Hours</th>
+                                <th style="color: grey;">Total Hours</th>
+                                <th style="color: grey;">Qty</th>
+                                <th style="color: grey;"></th>
+                                <th style="color: grey;"></th>
+                                <th style="color: grey;"></th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+
+                            
+
+                            <tr>
+                            <td style="color:#3f4fe2; font-size: 15px;"><img src="img/icons/us.png">&nbsp; US</td>
+                            <td>'. round(($usrow['SUM(Hours)'] / $usprorow['COUNT(Distinct MPN)']), 3) .'</td>
+                            <td>' . $usrow['SUM(Hours)'] . '</td>
+                            <td>' . $usprorow['COUNT(Distinct MPN)']. '</td>
+                            </tr>
+                            
+                            <tr>
+                            <td style="color: #d10224; font-size: 15px;"><img src="img/icons/ca.png">&nbsp; CA</td>
+                            <td>'. round(($carow['SUM(Hours)'] / $caprorow['COUNT(Distinct MPN)']), 3) .'</td>
+                            <td>' . $carow['SUM(Hours)'] . '</td>
+                            <td>' . $caprorow['COUNT(Distinct MPN)']. '</td>
+
+                            </tr>
+
+                            <tr>
+                            <td>Total</td>
+                            <td>'. round(($regionrow['SUM(Hours)'] / $prorow['COUNT(Distinct MPN)']), 3) .'</td>
+                            <td>' . $regionrow['SUM(Hours)'] . '</td>
+                            <td>' . $prorow['COUNT(Distinct MPN)']. '</td>                         
+                            </tr>
+
+                            </tbody>
+                        </table>
+        </div><br><br>';
+    }
        ?>
         
           <br>
           <hr>  
- 
+        <!---Search Bar*******************************************************-->
+              <!-- <div style="float: left;">
+                <form class="navbar-form navbar-right">
+                        <input type="text" class="form-control" placeholder="Search..." style="width: 500px;">
+                </form>
+              </div> -->
+        <!---*******************************************************-->
 
 <div class = "table-responsive" style="width: 90%; margin-left: 20px; font-size: 14px;">
     <table class="table table-striped">
@@ -267,15 +342,17 @@ include ("classes/mpnloader.php");
                 $newdate1 = date('Y-m-d', strtotime($date1));
                 $newdate2 = date('Y-m-d', strtotime($date2));  
 
+            //$design_list = "SELECT Full_Name, AVG(Hours) From HOURS WHERE Full_Name = '$designer' AND (Work_Date between '$newdate1' AND '$newdate2') Group by Full_Name ";
+
         
             $design_list = "SELECT Full_Name, SUM(Hours), COUNT(Distinct MPN) From HOURS WHERE MPN <> 'No MPN' Group by Full_Name";   
+
             $design_query = mysqli_query($db, $design_list);
             
-           
 
    
 
-                echo '<h4 style="font-size: 20px; margin-left: 20px; color: #2679c7;"> <span class="glyphicon glyphicon-user"></span> Designers - Overall </h4>
+                echo '<h4 style="font-size: 20px; margin-left: 20px; color: #2679c7;"> <span class="glyphicon glyphicon-user"></span> Designers </h4>
     
                     <div class = "table-responsive" style="width: 550px; margin-left: 20px; font-size: 14px;">
                             <table class="table table-striped">
@@ -289,21 +366,18 @@ include ("classes/mpnloader.php");
                                 <tbody>';
 
                 while($designrow = mysqli_fetch_array($design_query,MYSQLI_ASSOC)){
-                    
-                    $fullname = $designrow['Full_Name'];
-                    $workable_list = "SELECT Full_Name, SUM(Workable) From workable_hours WHERE Full_Name = '$fullname'";   
-                    $workable_query = mysqli_query($db, $workable_list);
-                    $workablerow = mysqli_fetch_array($workable_query,MYSQLI_ASSOC);
 
+                     
                     $designAvg = ($designrow['SUM(Hours)']) / ($designrow['COUNT(Distinct MPN)']);
-
+                    
             
                     echo'
                     
                             <tr>
                           <td>' . $designrow['Full_Name']. '</td>
                           <td style="text-align: center;">' . $designrow['SUM(Hours)']. '</td>
-                          <td style="text-align: center;">' . $workablerow['SUM(Workable)']. '</td>
+                          <td></td>
+                          <td></td>
                         <td></td>
                           </tr>' ;
                 };

@@ -74,12 +74,6 @@ include ("classes/mpnloader.php");
       
                 </div>
             <br><br>
-
-            <h1 style="margin-left: 50px; color: #f4b342; font-size: 18px;"> ________________________________________</h1>
-           <h1 style="margin-left: 50px; color: #f4b342; font-size: 18px;"> <span style="color: red;">!</span> This page is currently under construction <span style="color: red;">!</span></h1>
-           <h1 style="margin-left: 50px; color: #f4b342; font-size: 18px;"> ________________________________________</h1>
-           <br><br>
-
             <hr>
       <div style ="float: right; margin-right: 100px; margin-top:50px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: grey; ">
             <canvas id="myChart" width="1400px"></canvas>

@@ -1,7 +1,7 @@
 <?php
 session_start();
-include ("includes/constants.php");
-include ("classes/mpnloader.php");
+// include ("includes/constants.php");
+// include ("classes/mpnloader.php");
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -38,7 +38,7 @@ include ("classes/mpnloader.php");
                         <span class="icon-bar"></span>
                       </button>
                       <a class="navbar-brand" href="#"><img src="img/West-Rock-Logo.png" width="200px"></a>
-                      <div style="margin-top: 27px; float: left; font-size: 20px; color:grey;">MPN Suite</div>
+                      <div style="margin-top: 27px; float: left; font-size: 20px; color:grey;">Project Suite</div>
                   
                     </div>
 
@@ -56,20 +56,16 @@ include ("classes/mpnloader.php");
                 </nav>
                 
                 <br><br>
-                <h1 style="margin-left: 20px;">Dashboard</h1>
+                <h1 style="margin-left: 20px;">Recent Projects</h1>
                 <hr>
                 
-                <div style="float:left;">
+                <!-- <div style="float:left;">
                 <a  href="hours.php"><button class="btn btn-primary" style="margin-left: 20px;"><span class="glyphicon glyphicon-time" style="margin-right: 10px; color: white;"></span>Hours</button></a>
                 <button class="btn btn-primary" type="submit" style="margin-left: 20px;">POG Log</button>
                 <button class="btn btn-primary" type="submit" style="margin-left: 20px;">Trackers</button>
-                </div>
+                </div> -->
 
            <br><br><br><br>
-           <h1 style="margin-left: 50px; color: #f4b342; font-size: 18px;"> ________________________________________</h1>
-           <h1 style="margin-left: 50px; color: #f4b342; font-size: 18px;"> <span style="color: red;">!</span> This page is currently under construction <span style="color: red;">!</span></h1>
-           <h1 style="margin-left: 50px; color: #f4b342; font-size: 18px;"> ________________________________________</h1>
-           <br><br>
               <div style="float: left;">
                 <form class="navbar-form navbar-right">
                         <input type="text" class="form-control" placeholder="Search..." style="width: 500px;">
@@ -79,13 +75,22 @@ include ("classes/mpnloader.php");
 
 
 <!---MPNS*******************************************************-->
+<?php
+// $server = 'serverName';
+// $dbName = 'databaseName';
+// $uid = 'yourUserName';
+// $pwd = 'yourPassword';
 
- <?php
+// $conn = new PDO("sqlsrv:server=$server; database = $dbName", $uid, $pwd);
+// $conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );  
 
-$mpn_list = "SELECT * FROM projects";
-
-$mpn_query = mysqli_query($db, $mpn_list);
-
+// $query = 'select * from Person.ContactType';  
+  
+// // simple query  
+// $stmt = $conn->query( $query );  
+// while ( $row = $stmt->fetch( PDO::FETCH_ASSOC ) ){  
+//    print_r( $row['Name'] ."\n" );  
+// }  
 ?>
 
 <div style="margin-left: 50px;"> 
@@ -97,39 +102,45 @@ $mpn_query = mysqli_query($db, $mpn_list);
             <thead>
             <tr>
                 <th>MPN</th>
-                <th>Description</th>
-                <th>1</th>
-                <th>2</th>
+                <th>C&F</th>
+                <th>Designer</th>
+                <th>Template</th>
                 <th>Date</th>
             </tr>
             </thead>
             <tbody>
 <?php
-while($mpnprofile = mysqli_fetch_array($mpn_query,MYSQLI_ASSOC)){
 
-  // $mpn_sql = "SELECT * FROM projects";
-  // $mpn_query2 = mysqli_query($db, $mpn_sql);
-  // $mpn_fetch = mysqli_fetch_array($mpn_query2,MYSQLI_ASSOC);
 
-  $searchurl="'mpn.php?fetchid=" . $mpnprofile['MPN']  . "'";
+$server = 'NTDEV0102\SQLCORP';
+$dbName = 'MD_DesignDoc_DEV';
+$uid = 'dds_user';
+$pwd = 'pgDS!11*';
 
-  // echo
-  //     '<a href=' . $searchurl . '><div class = "Test" style="border-style: solid; border-width: 2px;" >' .
-  //       $mpnprofile['MPN'].
+$conn = new PDO("sqlsrv:server=$server; database = $dbName", $uid, $pwd);
+$conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );  
 
-  //     '</div></a>'
-  //     ;
-  //       }
-      
+
+//$query = 'SELECT * FROM dbo.MPN_Master JOIN dbo.CFData ON CF_ID';  
+$query = 'SELECT * FROM dbo.MPN_Master ORDER by Create_Date DESC';  
+
+// simple query  
+$stmt = $conn->query( $query );  
+while ( $row = $stmt->fetch( PDO::FETCH_ASSOC ) ){  
+   
+  //print_r( $row['Name'] ."\n" );  
+
+$customer = "PG";
+$searchurl="mpn.php?fetchid=" .  $row['MPN'] . "&cust=" . $customer ;
 
 echo
 
            '<tr>
-                <td><a href=' . $searchurl . '>' . $mpnprofile['MPN'] . '</a></td>
-                <td>'.$mpnprofile['Desc'].'</td>
-                <td>ipsum</td>
-                <td>dolor</td>
-                <td>'.$mpnprofile['Entry Date'].'</td>
+                <td><a href=' . $searchurl . '>' . $row['MPN'] . '</a></td>
+                <td>'.$row['CF_ID'].'</td>
+                <td>'.$row['Designer'].'</td>
+                <td>'.$row['Template_ID'].'</td>
+                <td>'.$row['Create_Date'].'</td>
             </tr>'
     ;}
 

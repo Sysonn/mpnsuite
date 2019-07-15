@@ -13,15 +13,12 @@ include ("classes/mpnloader.php");
        <meta name="viewport" content = "width=device-width, initial-scale=1.0">
 
        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-       
        <link href="https://fonts.googleapis.com/css?family=Nunito+Sans" rel="stylesheet">
        <link rel="stylesheet" href="style/custom.css">
 
        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
-
+    
         <!-- Custom styles for this template -->
         <link href="style/dashboard.css" rel="stylesheet">
     
@@ -40,8 +37,8 @@ include ("classes/mpnloader.php");
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                       </button>
-                      <a class="navbar-brand" href="index.php"><img src="img/West-Rock-Logo.png" width="200px"></a>
-                      <div style="margin-top: 27px; float: left; font-size: 20px; color:grey;">Document Suite</div>
+                      <a class="navbar-brand" href="#"><img src="img/West-Rock-Logo.png" width="200px"></a>
+                      <div style="margin-top: 27px; float: left; font-size: 20px; color:grey;">MPN Suite</div>
                   
                     </div>
 
@@ -57,72 +54,86 @@ include ("classes/mpnloader.php");
                     </div>
                   </div>
                 </nav>
-
+                
                 <br><br>
+                <h1 style="margin-left: 20px;">Dashboard</h1>
+                <hr>
+                
                 <div style="float:left;">
-              
+                <a  href="hours.php"><button class="btn btn-primary" style="margin-left: 20px;"><span class="glyphicon glyphicon-time" style="margin-right: 10px; color: white;"></span>Hours</button></a>
+                <button class="btn btn-primary" type="submit" style="margin-left: 20px;">POG Log</button>
+                <button class="btn btn-primary" type="submit" style="margin-left: 20px;">Trackers</button>
                 </div>
 
-
-           
-            <h1 style="margin-left: 20px;">Upload Hours Data</h1>
-            <br>
-                <div style="float:left;">
-                <a  href="hours.php"><button class="btn btn-primary" style="margin-left: 20px;">Hours</button></a>
-                <a  href="hours-report.php"><button class="btn btn-primary" style="margin-left: 20px;">Reports</button></a>
-                <button class="btn btn-primary" type="submit" style="margin-left: 20px;">Designers</button>
-               
-      
-                </div>
-            <br><br>
-            <hr>
-
-<br>     
-
-<div style="border-style: solid; border-width: 1px; border-radius: 10px; border-color: grey; background-color: lightgrey; margin: 0 auto; padding-bottom: 20px; width: 50%;">
-<form action="upload-hours.php" method="post" enctype="multipart/form-data" style="margin-left: 150px;">
-    <h2>Select file to upload:</h2>
-    <br>
-    <input type="file" name="file" id="file">
-    <br>
-    <input type="submit" name="submit" value="Submit">
-</form>
-<br>
-
-<div style="margin-left: 150px;">
-
-<?php
-
-  if(!empty($_FILES['file']))
-  {
-    $filename = addslashes($_FILES['file']['tmp_name']);
+           <br><br><br><br>
+              <div style="float: left;">
+                <form class="navbar-form navbar-right">
+                        <input type="text" class="form-control" placeholder="Search..." style="width: 500px;">
+                </form>
+              </div>
 
 
-    $query = <<<eof
-    LOAD DATA LOCAL INFILE '$filename' 
-    INTO TABLE hours2
-     FIELDS TERMINATED BY ',' 
-     OPTIONALLY ENCLOSED BY '"'
-     LINES TERMINATED BY '\r\n'
-     IGNORE 1 LINES
-    (MPN, Project_Name, @Project_Date, Customer, Customer_Bill_To, Salesperson_Name, Activity_Name, Location_Name, Full_Name, @Work_Date, @Modified_Date, Hours, Region)
-    SET Project_Date = DATE_FORMAT(STR_TO_DATE(@Project_Date, '%m/%d/%Y'),'%Y-%m-%d'), Work_Date = DATE_FORMAT(STR_TO_DATE(@Work_Date, '%m/%d/%Y'),'%Y-%m-%d'), Modified_Date = DATE_FORMAT(STR_TO_DATE(@Modified_Date, '%m/%d/%Y'),'%Y-%m-%d');
-eof;
 
-//SET Project_Date = date_format(STR_TO_DATE(@Project_Date, "%m-%d-%Y"),"%Y-%m-%d")
+<!---MPNS*******************************************************-->
 
-mysqli_query($db, $query);
+ <?php
 
-echo "<div style='font-size: 8px;'>" . ($_FILES['file']['name']) . "</div>";
-echo "Upload Complete!";
+$mpn_list = "SELECT * FROM projects";
 
-    }else{
+$mpn_query = mysqli_query($db, $mpn_list);
 
-    }
-  
 ?>
-</div>           
+
+<div style="margin-left: 50px;"> 
+<br><br><br><br>
+
+
+<div class = "table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>MPN</th>
+                <th>Description</th>
+                <th>1</th>
+                <th>2</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+<?php
+while($mpnprofile = mysqli_fetch_array($mpn_query,MYSQLI_ASSOC)){
+
+  // $mpn_sql = "SELECT * FROM projects";
+  // $mpn_query2 = mysqli_query($db, $mpn_sql);
+  // $mpn_fetch = mysqli_fetch_array($mpn_query2,MYSQLI_ASSOC);
+
+  $searchurl="'mpn.php?fetchid=" . $mpnprofile['MPN']  . "'";
+
+  // echo
+  //     '<a href=' . $searchurl . '><div class = "Test" style="border-style: solid; border-width: 2px;" >' .
+  //       $mpnprofile['MPN'].
+
+  //     '</div></a>'
+  //     ;
+  //       }
+      
+
+echo
+
+           '<tr>
+                <td><a href=' . $searchurl . '>' . $mpnprofile['MPN'] . '</a></td>
+                <td>'.$mpnprofile['Desc'].'</td>
+                <td>ipsum</td>
+                <td>dolor</td>
+                <td>'.$mpnprofile['Entry Date'].'</td>
+            </tr>'
+    ;}
+
+?>
+</tbody>
+</table>
 </div>
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

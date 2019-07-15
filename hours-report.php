@@ -218,6 +218,20 @@ include ("classes/mpnloader.php");
                 <button type="submit" class="btn btn-default" style="border-width: 2px; "><span class="glyphicon glyphicon-play-circle" style="margin-right: 10px; color: black;"></span>Run Report</button> 
                 
                             
+            <?php 
+            $designerCheck = $_POST["designer"];
+            $year1Check = $_POST["startDate"];
+            $year2Check = $_POST["endDate"];
+            
+             if($year1Check == "Select"){
+                echo "<br><br><div style='margin-left: 0px; color: red; font-size: 14px;'> Please Select Start Date!</div>";
+            } elseif($year2Check == "Select") {
+                echo "<br><br><div style='margin-left: 0px; color: red; font-size: 14px;'> Please Select End Date!</div>";
+            } elseif($designerCheck == "Select") {
+                echo "<br><br><div style='margin-left: 0px; color: red; font-size: 14px;'> Please Select Designer!</div>";
+            }
+                
+            ?>
             
             </form>
                 
@@ -251,21 +265,7 @@ include ("classes/mpnloader.php");
                 <div style="margin-left: 150px; margin-top: -56px;">
                 <a href="#" id="test" onClick="javascript:fnExcelReport();"><button type="submit" class="btn btn-default" style="border-width: 2px;"><span class="glyphicon glyphicon-download" style="margin-right: 10px; color: black;"></span>Download Report</button></a> 
                 </div>
-                
-                <?php 
-            $designerCheck = $_POST["designer"];
-            $year1Check = $_POST["startDate"];
-            $year2Check = $_POST["endDate"];
             
-             if($year1Check == "Select"){
-                echo "<br><br><div style='margin-left: 0px; color: red; font-size: 14px;'> Please Select Start Date!</div>";
-            } elseif($year2Check == "Select") {
-                echo "<br><br><div style='margin-left: 0px; color: red; font-size: 14px;'> Please Select End Date!</div>";
-            } elseif($designerCheck == "Select") {
-                echo "<br><br><div style='margin-left: 0px; color: red; font-size: 14px;'> Please Select Designer!</div>";
-            }
-                
-            ?>
                 
                 <script>
                 
@@ -800,7 +800,7 @@ if($designer == "- All Designers -"){
 
 echo '
 
-    <div class = "table-responsive" id="TasksTable" style="width: 500px; margin-left: 40px;  font-size: 14px;">
+    <div class = "table-responsive" style="width: 500px; margin-left: 40px;  font-size: 14px;">
     <h4 style="font-size: 20px; margin-left: 10px; color: #2679c7;"> <span class="glyphicon glyphicon-th-list"></span> Tasks </h4>
             <table class="table table-striped">
                 <thead>
@@ -830,7 +830,7 @@ while($designrow = mysqli_fetch_array($design_query,MYSQLI_ASSOC)){
 
     echo '
 
-    <div class = "table-responsive" id="TasksTable" style="width: 500px; margin-left: 40px; font-size: 14px;">
+    <div class = "table-responsive" style="width: 500px; margin-left: 40px; font-size: 14px;">
     <h4 style="font-size: 20px; margin-left: 10px; color: #2679c7;"> <span class="glyphicon glyphicon-th-list"></span> Tasks </h4>
             <table class="table table-striped">
                 <thead>
@@ -885,10 +885,10 @@ var myChart = new Chart(ctx, {
         labels: <?=json_encode(array_values($activity_data));?>,
         //labels: ['Test'],
         datasets: [{
-            label: "Task Hours",
+            label: 'Task Hours',
             data: <?=json_encode(array_values($a_hour_data));?>,
-            backgroundColor: "rgba(255, 102, 0, 0.5)",
-            borderColor: "rgba(255, 102, 0, 1)",
+            backgroundColor: 'rgba(255, 102, 0, 0.5)',
+            borderColor: 'rgba(255, 102, 0, 1)',
             borderWidth: 1
         }]
     },
@@ -935,7 +935,7 @@ if($designer == "- All Designers -"){
 
     echo '
     
-        <div class = "table-responsive" id="UniqueMPN" style="width: 400px; margin-left: 40px;  font-size: 14px;">
+        <div class = "table-responsive" style="width: 400px; margin-left: 40px;  font-size: 14px;">
         <hr>
         <h4 style="font-size: 20px; margin-left: 10px; color: #2679c7;"><span class="glyphicon glyphicon-file"></span> Unique MPNs</h4>
           
@@ -964,7 +964,7 @@ if($designer == "- All Designers -"){
     
         echo '
     
-        <div class = "table-responsive" id="UniqueMPN" style="width: 400px; margin-left: 40px;  font-size: 14px;">
+        <div class = "table-responsive" style="width: 400px; margin-left: 40px;  font-size: 14px;">
         <h4 style="font-size: 20px; margin-left: 10px; color: #2679c7;"> <span class="glyphicon glyphicon-file"></span> Unique MPNs</h4>
           
             <table class="table table-striped">
@@ -1005,7 +1005,7 @@ echo'
 
               <hr>
               <br>
-              <h2 style="margin-left: 20px; color: #2679c7;" id="DesignTitle" ><span class="glyphicon glyphicon-stats"></span> Design Hours Data</h2>
+              <h2  style="margin-left: 20px; color: #2679c7;"><span class="glyphicon glyphicon-stats"></span> Design Hours Data</h2>
               <hr>
 <!---MPNS*******************************************************-->
 
@@ -1056,7 +1056,7 @@ echo'
 
 
 
-<div class = "table-responsive" id="DesignTable" style="font-size: 12px; margin-left: -30px; max-height: 700px; border-color: grey; border-style: solid; border-radius: 5px; border-width: 1px;">
+<div class = "table-responsive" style="font-size: 12px; margin-left: -30px; max-height: 700px; border-color: grey; border-style: solid; border-radius: 5px; border-width: 1px;">
 
 
 
@@ -1174,35 +1174,24 @@ function reportSearch(){
 <br><br>
 
 <script>
+// $(document).ready(function() {
+//     if ($("#designerSelect").val == '')
+//         $("#myChart").style.display = "none";
+// });
 
+//var designerBox = document.getElementById('designerSelect');
   var chart1 = document.getElementById('myChart');
   var chart2 = document.getElementById('myChart2');
   var chart3 = document.getElementById('workableChart');
-
-  var table1 = document.getElementById('TasksTable');
-  var table2 = document.getElementById('UniqueMPN');
-  var table3 = document.getElementById('DesignTable');
-  var title1 = document.getElementById('DesignTitle');
-
-  var designerValue = '<?php echo json_encode($designer);?>';
+  var designerValue = '<?php echo $designer;?>';
   $(window).on('load',function(){
-  
-      //alert(designerValue);
+      alert(designerValue);
 
-if (designerValue == "null" || designerValue == '"Select"'){
-    chart1.style.display = "none";
-    chart2.style.display = "none";
-    chart3.style.display = "none";
-    table1.style.display = "none";
-    table2.style.display = "none";
-    table3.style.display = "none";
-    title1.style.display = "none";
-    //alert("Please Select a Designer!")
-      
-      }else if(designerValue != '"- All Designers -"') {
-        chart1.style.display = "none";
-      }else{
-
+if (desigerValue.value = '- All Designers -'){
+    alert("Designer is not selected");
+    //   chart1.style.display = "none";
+    //   chart2.style.display = "none";
+    //   chart3.style.display = "none";
       }
 
   });

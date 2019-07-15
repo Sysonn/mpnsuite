@@ -17,6 +17,8 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <link id=Main-File rel=Main-File href="../cwm.php">
 <link rel=File-List href=filelist.xml>
 <link rel=Stylesheet href=stylesheet.css>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <style>
 <!--table
 	{mso-displayed-decimal-separator:"\.";
@@ -27,8 +29,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
 	mso-footer-margin:.3in;}
 -->
 </style>
-<![if !supportTabStrip]><script language="JavaScript">
-<!--
+<![if !supportTabStrip]>
+<script language="JavaScript">
+/* <!--
 function fnUpdateTabs()
  {
   if (parent.window.g_iIEVer>=4) {
@@ -44,13 +47,32 @@ if (window.name!="frSheet")
  window.location.replace("../cwm.php");
 else
  fnUpdateTabs();
-//-->
+//--> */
+/* 
+$(document).ready(function(){
+        $("td").click(function(){
+        
+            //if get onhover id
+            //alert("NOW GET ON HOVER ID NAME:--"+" "+this.id);
+            
+            //if get onhover class
+            //alert("NOW GET ON HOVER CLASS NAME:--"+" "+$(this).attr('class')); 
+            
+          //alert("clicked"); 
+           $(this).css("background-color", "red", "color", "white");
+           $(this).text("<?php echo $desc ?>");
+            
+        });
+    }); */
+
+
+
+
 </script>
 <![endif]>
 </head>
 
 <body link="#0563C1" vlink="#954F72" class=xl66>
-
 <table border=0 cellpadding=0 cellspacing=0 width=1898 style='border-collapse:
  collapse;table-layout:fixed;width:1429pt'>
  <col class=xl66 width=81 style='mso-width-source:userset;mso-width-alt:2962;
@@ -324,10 +346,10 @@ else
   <td class=xl66>Date:</td>
   
     <!--/**************************************************************************************************************************************************************/
-  /*Brandcode******************************************************************************************************************************************************/
+  /*Date******************************************************************************************************************************************************/
   /**************************************************************************************************************************************************************/
   -->
-  <td colspan=2 class=xl76><a name=date> <?php echo $bc ?></a></td>
+  <td colspan=2 class=xl76><a name=date> <?php echo $date ?> </a></td>
 <!--/********************************************************************************************************************/-->
 
   <td class=xl66></td>
@@ -353,7 +375,12 @@ else
  </tr>
  <tr height=25 style='mso-height-source:userset;height:18.75pt'>
   <td height=25 class=xl74 style='height:18.75pt'>Brand Code:</td>
-  <td colspan=2 class=xl79>83521816</td>
+  <!--/**************************************************************************************************************************************************************/
+  /*Brandcode******************************************************************************************************************************************************/
+  /**************************************************************************************************************************************************************/-->
+  <td colspan=2 class=xl79> <?php echo $bc ?> </td>
+  <!--/********************************************************************************************************************/-->
+
   <td class=xl66></td>
   <td class=xl66></td>
   <td class=xl66>Revised:</td>
@@ -385,7 +412,8 @@ else
   /*Date******************************************************************************************************************************************************/
   /**************************************************************************************************************************************************************/
   -->
-  <td colspan=2 class=xl81 width=193 style='width:145pt'>  <?php echo $desc ?> </td>
+  <!-- <td id="wow" colspan=2 class=xl81 width=193 style='width:145pt'>  <?php echo $desc ?> </td> -->
+  <td colspan=2 class=xl81 width=193 style='width:145pt'> </td>
   <!--/********************************************************************************************************************/-->
   
   <td class=xl66></td>
